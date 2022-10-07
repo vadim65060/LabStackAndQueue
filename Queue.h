@@ -10,17 +10,21 @@
 
 template<class T>
 class Queue {
+public:
     Queue() = default;
 
     explicit Queue(T data) {
-        Push(data);
+        PushBack(data);
     }
 
-    Queue(const Queue<T> &&queue)  noexcept {
+    Queue(const Queue<T> &queue) noexcept {
         QueueCopy(queue);
     }
 
-    Queue<T>(Queue<T> &queue) noexcept: nodeHead(queue.nodeHead), nodeTail(queue.nodeTail) {}
+    Queue<T>(Queue<T> &&queue) noexcept: nodeHead(queue.nodeHead), nodeTail(queue.nodeTail) {
+        queue.nodeHead = nullptr;
+        queue.nodeTail = nullptr;
+    }
 
     ~Queue() {
         Del();
@@ -44,34 +48,40 @@ class Queue {
         if (nodeHead == nullptr)
             throw Queue_EMPTY;
         Node<T> *tempNode = nodeHead;
-        T nodeData = nodeHead->data;
+        T nodeData;
+        nodeData = nodeHead->data;
         nodeHead = nodeHead->connectedNode;
+        if (nodeHead == nullptr)
+            nodeTail = nullptr;
+
         delete tempNode;
         return nodeData;
     }
 
-    T GetFront() {
+    const T &GetFront() const {
         if (nodeHead == nullptr)
             throw Queue_EMPTY;
         return nodeHead->data;
     }
 
-    void SetFront(T data) {
-        if (nodeHead == nullptr)
+    const T &GetBack() const {
+        if (nodeTail == nullptr)
             throw Queue_EMPTY;
-        nodeHead->data = data;
+        return nodeTail->data;
     }
 
-    bool IsEmpty() {
+    bool IsEmpty() const {
         return nodeTail == nullptr;
     }
 
-    Queue<T> &operator=(Queue<T> &&queue)  noexcept {
+    Queue<T> &operator=(Queue<T> &&queue) noexcept {
         if (&queue == this)
             return *this;
         this->Del();
         nodeTail = queue.nodeTail;
         nodeHead = queue.nodeHead;
+        queue.nodeHead = nullptr;
+        queue.nodeTail = nullptr;
         return *this;
     }
 

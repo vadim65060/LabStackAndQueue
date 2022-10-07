@@ -47,7 +47,7 @@ public:
         return nodeData;
     }
 
-    T GetFront() {
+    const T &GetFront() const {
         if (node == nullptr)
             throw STACK_EMPTY;
         return node->data;
@@ -59,15 +59,16 @@ public:
         node->data = data;
     }
 
-    bool IsEmpty() {
+    bool IsEmpty() const {
         return node == nullptr;
     }
 
-    Stack<T> &operator=(Stack<T> &&stack)  noexcept {
+    Stack<T> &operator=(Stack<T> &&stack) noexcept {
         if (&stack == this)
             return *this;
         this->Del();
         node = stack.node;
+        stack.node = nullptr;
         return *this;
     }
 
